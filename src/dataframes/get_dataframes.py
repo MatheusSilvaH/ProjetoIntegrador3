@@ -21,6 +21,7 @@ def get_match_winners():
 def get_bans_winners():
     new_df = get_match_winners().apply(separate_champions, axis=1)
     bans_winners_df = pd.concat([get_match_winners()['win'], get_match_winners()['gameId'], new_df], axis=1)
+    bans_winners_df.rename(columns={'0': 'ban0', '1': 'ban1', '2': 'ban2', '3': 'ban3', '4': 'ban4'}, inplace=True)
 
     return bans_winners_df
 
@@ -30,9 +31,17 @@ def get_match_losers():
 
     losers_df['ban_championIds'] = losers_df['bans'].apply(extract_champion_ids)
 
-    losers_df.drop(losers_df.bans)
+    losers_df.drop(losers_df.bans, axis=1, inplace=True)
 
     return losers_df
+
+
+def get_bans_losers():
+    new_df = get_match_losers().apply(separate_champions, axis=1)
+    bans_losers_df = pd.concat([get_match_losers()['win'], get_match_losers()['gameId'], new_df], axis=1)
+    bans_losers_df.rename(columns={'0': 'ban0', '1': 'ban1', '2': 'ban2', '3': 'ban3', '4': 'ban4'}, inplace=True)
+
+    return bans_losers_df
 
 
 def get_champions():
@@ -48,6 +57,3 @@ def extract_champion_ids(bans_list):
 
 def separate_champions(row):
     return pd.Series(row['ban_championIds'])
-
-
-get_match_data()

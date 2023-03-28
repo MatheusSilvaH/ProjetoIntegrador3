@@ -1,6 +1,5 @@
 from src.database.database_connection import database_connection
-from src.dataframes.get_dataframes import get_match_data, get_match_winners, get_match_losers, get_champions, get_bans_winners
-
+from src.dataframes.get_dataframes import get_match_data, get_match_winners, get_match_losers, get_champions, get_bans_winners, get_bans_losers
 
 
 def insert_champions_data():
@@ -84,7 +83,8 @@ def insert_fact_winner():
 
     conn.close()
 
-def insert_fact_bans():
+
+def insert_fact_bans_winners():
     conn = database_connection()
     cur = conn.cursor()
 
@@ -99,7 +99,7 @@ def insert_fact_bans():
             """
 
             data = (
-                row['win'], row['gameId'], row['0'], row['1'], row['2'], row['3'], row['4']
+                row['win'], row['gameId'], row['ban0'], row['ban1'], row['ban2'], row['ban3'], row['ban4']
             )
 
             cur.execute(sql, data)
@@ -110,7 +110,63 @@ def insert_fact_bans():
 
     conn.close()
 
-#insert_dim_matches_data()
-insert_fact_bans()
-#insert_fact_winner()
-#insert_champions_data()
+
+def insert_fact_losers():
+    conn = database_connection()
+    cur = conn.cursor()
+
+    for index, row in get_match_losers().iterrows():
+        try:
+            sql = """
+                INSERT INTO f_derrotas (
+                    team_id, win, first_blood, first_tower, first_inhibitor,
+                    first_baron, first_dragon, first_rift_herald, tower_kills,
+                    inhibitor_kills, baron_kills, dragon_kills, vilemaw_kills,
+                    rift_herald_kills, dominion_victory_score, game_id, ban_champion_ids
+                ) VALUES (
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                )
+            """
+
+            data = (
+                row['teamId'], row['win'], row['firstBlood'], row['firstTower'], row['firstInhibitor'],
+                row['firstBaron'], row['firstDragon'], row['firstRiftHerald'], row['towerKills'],
+                row['inhibitorKills'], row['baronKills'], row['dragonKills'], row['vilemawKills'],
+                row['riftHeraldKills'], row['dominionVictoryScore'], row['gameId'], row['ban_championIds']
+            )
+
+            cur.execute(sql, data)
+        except Exception as erro:
+            print(f'Erro ao inserir a linha {index}. Erro: {erro}')
+
+    conn.commit()
+
+    conn.close()
+
+
+def insert_fact_bans_losers():
+    conn = database_connection()
+    cur = conn.cursor()
+
+    for index, row in get_bans_losers().iterrows():
+        try:
+            sql = """
+                INSERT INTO f_bans (
+                win, gameId, ban0, ban1, ban2, ban3, ban4
+                ) VALUES (
+                    %s, %s, %s, %s, %s, %s, %s
+                )
+            """
+
+            data = (
+                row['win'], row['gameId'], row['ban0'], row['ban1'], row['ban2'], row['ban3'], row['ban4']
+            )
+
+            cur.execute(sql, data)
+        except Exception as erro:
+            print(f'Erro ao inserir a linha {index}. Erro: {erro}')
+
+    conn.commit()
+
+    conn.close()
+

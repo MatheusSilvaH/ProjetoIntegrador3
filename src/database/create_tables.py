@@ -25,8 +25,8 @@ def create_dim_matches():
 
     cur.execute("""
         CREATE TABLE d_partidas (
-            gameCreation real,
-            gameDuration real,
+            gameCreation DECIMAL,
+            gameDuration DECIMAL,
             gameId BIGINT PRIMARY KEY,
             gameMode VARCHAR(255),
             gameType VARCHAR(255),
@@ -73,6 +73,35 @@ def create_fact_winner():
     print('Tabela "f_vitorias" criada com sucesso!')
 
 
+def create_fact_loser():
+    conn = database_connection()
+    cur = conn.cursor()
+
+    cur.execute('''CREATE TABLE f_derrotas
+                   (teamId INT,
+                    win VARCHAR(10),
+                    firstBlood BOOLEAN,
+                    firstTower BOOLEAN,
+                    firstInhibitor BOOLEAN,
+                    firstBaron BOOLEAN,
+                    firstDragon BOOLEAN,
+                    firstRiftHerald BOOLEAN,
+                    towerKills INT,
+                    inhibitorKills INT,
+                    baronKills INT,
+                    dragonKills INT,
+                    vilemawKills INT,
+                    riftHeraldKills INT,
+                    dominionVictoryScore INT,
+                    gameId BIGINT REFERENCES d_partidas(gameid),
+                    ban_championIds VARCHAR(200) REFERENCES d_campeoes(nome));''')
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    print('Tabela "f_derrotas" criada com sucesso!')
+
+
 def create_fact_bans():
     conn = database_connection()
     cur = conn.cursor()
@@ -93,6 +122,3 @@ def create_fact_bans():
     cur.close()
     conn.close()
     print('Tabela "f_bans" criada com sucesso!')
-create_dim_champions()
-create_dim_matches()
-create_fact_bans()
