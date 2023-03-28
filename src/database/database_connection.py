@@ -2,12 +2,14 @@ import psycopg2
 
 
 def database_connection():
-    # Definine as informações de conexão com o banco de dados
+    '''
+     Essa função retorna os dados de conexão com o banco
+    '''
     conn = psycopg2.connect(
         host="localhost",
         database="dados_lolzinho",
         user="postgres",
-        password="gaf2a88xm"
+        password="SUASENHAAQUI"
     )
 
     return conn
