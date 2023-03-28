@@ -7,7 +7,7 @@ def database_connection():
         host="localhost",
         database="dados_lolzinho",
         user="postgres",
-        password="gaf2a88xm"
+        password="SUASENHAAQUI"
     )
 
     return conn
